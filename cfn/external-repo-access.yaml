@@ -82,7 +82,7 @@ Parameters:
     Description: Git Repo SSH Private Key stored in AWS Secrets Manager.
     Type: String
     NoEcho: 'true'
-    Default: 'arn:aws:secretsmanager:us-east-1:239380694500:secret:external-repo-access-png2wb'
+    Default: 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:<your-secret-name>'
   SourceActionProvider:
     Description: CodePipeline custom source action name.
     Type: String
@@ -94,11 +94,11 @@ Parameters:
   RepoCloneLambdaVpc:
     Description: VPC for Git clone Lambda and CodeBuild deployment.
     Type: 'AWS::EC2::VPC::Id'
-    Default: 'vpc-0119dc6b76a6e56de'
+    Default: 'your-vpc-id'
   RepoCloneLambdaSubnet:
     Description: Private subnet(s) for Git clone Lambda and CodeBuild deployment.
     Type: 'List<AWS::EC2::Subnet::Id>'
-    Default: 'subnet-0ffec4eee0db69311, subnet-0a47543730ca266a0'
+    Default: 'your-subnet-id-1, your-subnet-id-2'
   CodePipelineName:
     Description: Name for CodePipeline.
     Type: String
@@ -106,7 +106,7 @@ Parameters:
   LambdaCodeS3Bucket:
     Description: S3 Bucket Containing Git Clone Lambda
     Type: String
-    Default: repo-clone-lambda-239380694500
+    Default: repo-clone-lambda-${AWS::AccountId}
   LambdaCodeS3Key:
     Description: S3 Key for Git Clone Lambda
     Type: String
