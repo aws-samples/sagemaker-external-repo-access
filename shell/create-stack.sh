@@ -1,5 +1,5 @@
 # If not already cloned, clone remote repository and change working directory to CloudFormation folder
-git clone https://github.com/kyleblocksom/sagemaker-external-repo-access.git
+git clone https://github.com/aws-samples/sagemaker-external-repo-access.git
 cd sagemaker-external-repo-access/
 
 # Use defaults or provide your own parameter values
