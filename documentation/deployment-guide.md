@@ -97,7 +97,7 @@ CloudFormation prepopulates stack parameters with the default values provided in
 ```sh
 # If not already cloned, clone remote repository and change working directory to CloudFormation folder
 git clone https://github.com/kyleblocksom/sagemaker-external-repo-access.git
-cd sagemaker-external-repo-access/
+cd sagemaker-external-repo-access/cfn/
 
 # Use defaults or provide your own parameter values
 STACK_NAME="external-repo-access"
