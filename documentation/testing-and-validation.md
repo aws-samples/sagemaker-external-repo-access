@@ -1,9 +1,9 @@
 # Testing and Validation
 ---
 ## Configure Webhook
-Once you complete the [Deployment Guide](documentation/deployment-guide.md) for securely accessing external package repositories, configure the webhook between your internal Git repository and CodePipeline using the _CodePipelineWebHookUrl_ output you retrieved from the final deployment step:
+Once you complete the [Deployment Guide](documentation/deployment-guide.md) for securely accessing external package repositories, configure the webhook between your Git repository and CodePipeline using the _CodePipelineWebHookUrl_ output you retrieved from the final deployment step:
 
-1. Navigate to your internal Git repository.
+1. Navigate to your Git repository.
 2. Select **Settings**.
 3. Select **Webhooks** then **Add webhook**.
 4. Enter your _CodePipelineWebHookUrl_ output in the **Payload URL** field, select _application/json_ under **Content type**, then select **Add webhook**.
