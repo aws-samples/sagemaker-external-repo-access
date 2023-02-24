@@ -159,6 +159,8 @@ aws cloudformation describe-stacks \
 ## Post-Deployment
 After you successfully deploy the above CloudFormation stack for securely accessing external package repositories, you are ready to configure your webhook, integrate with your security scanning software, and experiment with SageMaker Studio Notebooks. Please proceed to [Testing & Validation](documentation/testing-and-validation.md).
 
+❗ Please note - We are using an IP-based webhook to connect from the private Git repository to CodePipeline. In a Production environment, we recommend the use of a webhook secret to ensure that POST requests sent to the payload URL originate from your private repo. When you set a secret, you will receive the X-Hub-Signature and X-Hub-Signature-256 headers in the webhook POST request.
+
 ## Testing and Validation
 see [Testing and Validation](../documentation/testing-and-validation.md)
 
