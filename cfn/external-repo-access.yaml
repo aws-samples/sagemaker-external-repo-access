@@ -69,7 +69,7 @@ Parameters:
   Branch:
     Description: Git branch to clone.
     Type: String
-    Default: 'Lex'
+    Default: 'main'
   GitUrl:
     Description: Git SSH URL.
     Type: String
