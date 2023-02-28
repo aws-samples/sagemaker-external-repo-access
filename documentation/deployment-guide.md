@@ -28,24 +28,16 @@ This solution requires private VPC subnets into which you can deploy your Lambda
 
 If your environment does not have the required VPC, subnets, NAT Gateway, and Internet Gateway configuration, you can create those by launching the following [CloudFormation template](https://github.com/awsdocs/aws-lambda-developer-guide/blob/master/templates/vpc-privatepublic.yaml).
 
-### Create SSH Key Pair
-To authenticate with the third-party Git repository, you will use an SSH key pair. To create the key pair, use the below ssh-keygen command in your local terminal:
+### Create Personal Access Token (PAT)
+To authenticate with the third-party Git repository, you will use a PAT. If you are using GitHub, you should use a [GitHub App](https://docs.github.com/en/apps/creating-github-apps/creating-github-apps/about-apps) to access resources on behalf of an organization or for long-lived integrations. To create your PAT, please follow the GitHub instructions for [creating a personal access token (classic)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token#creating-a-personal-access-token-classic). Make note of your PAT before closing your browser as you will use it for AWS Secrets Manager configuration below.
+
+Publish your PAT to AWS Secrets Manager using the AWS Command Line Interface (AWS CLI):
 
 ```sh
-ssh-keygen -t rsa -b 4096 -C "your_git_email@example.com"
+SECRETS_MANAGER_PAT_ARN=$(aws secretsmanager create-secret --name github-pat \
+--secret-string <your PAT token> --query ARN --output text)
 ```
-
-Follow the commands prompts to create a filename (ex: external-repo-rsa) and optional paraphrase for the key. This generates your private/public rsa key pair in the current directory: external-repo-rsa and external-repo-rsa.pub.
-
-Make a note of the contents of external-repo-rsa.pub and add it as an authorized key for your Git user. For instructions, please see [Adding an SSH key to your GitLab account](https://docs.gitlab.com/ee/ssh/#adding-an-ssh-key-to-your-gitlab-account).
-
-Next, publish your private key to AWS Secrets Manager using the AWS Command Line Interface (AWS CLI):
-
-```sh
-SECRETS_MANAGER_SSH_ARN=$(aws secretsmanager create-secret --name external-repo-rsa \
---secret-string file://external-repo-rsa --query ARN --output text)
-```
-Make a note of the Secret ARN, which you will input later as the _SecretsManagerArnForSSHPrivateKey_ CloudFormation parameter.
+Make a note of the Secret ARN, which you will input later as the _SecretsManagerArnForPAT_ CloudFormation parameter.
 
 ### Create S3 and Upload Lambda Function
 This solution leverages a Lambda function that polls for the job details of the CodePipeline custom source action. Once there is a change on the source branch, the Lambda function triggers AWS CodeBuild execution and passes all the job-related information.
@@ -116,7 +108,7 @@ SUBNET_ID1=<private subnet 1 from above VPC>
 SUBNET_ID2=<private subnet 2 from above VPC>
 
 # Below parameter values acquired from 'Create SSH Key Pair' pre-deployment section
-SECRETS_MANAGER_SSH_ARN=<ARN of SSH Secret>
+SECRETS_MANAGER_PAT_ARN=<ARN of PAT Secret>
 
 # Below parameter values acquired from 'Create S3 and Upload Lambda Function' pre-deployment section
 LAMBDA_S3_BUCKET=<S3 bucket with compressed Lambda code>
@@ -130,7 +122,7 @@ ParameterKey=SourceActionProvider,ParameterValue=${CustomSourceForGit} \
 ParameterKey=GitBranch,ParameterValue=${GIT_BRANCH} \
 ParameterKey=GitUrl,ParameterValue=${GIT_URL} \
 ParameterKey=GitWebHookIpAddress,ParameterValue=${GIT_WEBHOOK_IP} \
-ParameterKey=SecretsManagerArnForSSHPrivateKey,ParameterValue=${SECRETS_MANAGER_SSH_ARN} \
+ParameterKey=SecretsManagerArnForPAT,ParameterValue=${SECRETS_MANAGER_PAT_ARN} \
 ParameterKey=RepoCloneLambdaSubnet,ParameterValue=${SUBNET_ID1}\\,${SUBNET_ID2} \
 ParameterKey=RepoCloneLambdaVpc,ParameterValue=${VPC_ID} \
 ParameterKey=LambdaCodeS3Bucket,ParameterValue=${LAMBDA_S3_BUCKET} \
