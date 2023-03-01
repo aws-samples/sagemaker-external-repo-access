@@ -37,7 +37,7 @@ Publish your PAT to AWS Secrets Manager using the AWS Command Line Interface (AW
 SECRETS_MANAGER_PAT_ARN=$(aws secretsmanager create-secret --name github-pat \
 --secret-string <your GitHuB PAT> --query ARN --output text)
 
-SECRETS_MANAGER_PAT_ARN=$(aws secretsmanager create-secret --name github-username \
+SECRETS_MANAGER_USERNAME_ARN=$(aws secretsmanager create-secret --name github-username \
 --secret-string <your GitHub username> --query ARN --output text)
 ```
 Make a note of the Secret ARN, which you will input later as the _SecretsManagerArnForPAT_ CloudFormation parameter.
