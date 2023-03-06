@@ -2,7 +2,7 @@
 ---
 The goal of this solution is to demonstrate the deployment of AWS CodeSuite Services (i.e., CodeBuild, CodePipeline) to orchestrate secure MLOps access to external package repositories in a data science environment configured with multi-layer security.
 
-This GitHub repository is intended to accomany the blog post, [Securing Access to External Package Repositories Using AWS CodeSuite Automation](https://aws.amazon.com/blogs/).
+This GitHub repository is intended to accompany the blog post, [Securing Access to External Package Repositories Using AWS CodeSuite Automation](https://aws.amazon.com/blogs/).
 
 This solution covers two main topics:
 1. Self-service data scientist workflow for accessing external package repositoires.
@@ -32,6 +32,7 @@ Centralized internet egress occurs through a NAT Gateway (NGW) attached to the e
 
 **5, 6, 7, 8, 9 – Automated Security Scanning and Results Notification**  
 CodeBuild gathers required secrets from Secrets Manager to execute security scanning software and manage GitHub artifacts in a subsequent security test stage. During the security test stage, CodeBuild performs agent-based static application security testing, software composition analysis, dynamic code analysis, and image vulnerability scans.  The security test stage output is analyzed as part of the CodePipeline orchestration. If the security scans return lower than medium severities, CodeBuild creates a new private repository in the customer-managed GitHub organization, then executes git push of the external package to the internal repository.
+
 CodeBuild then performs a git pull of the current results CSV file, updates the file with the outcome of the latest request, then executes a git push of the updated results file to the private repository. A CodeBuild notification rule then uses Amazon Simple Email Service (SES) to email the results, positive or negative, to the requesting data scientist.
 
 **10, 11, 12 – MLOps Workflow**  
