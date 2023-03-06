@@ -55,60 +55,50 @@ cfn_nag_scan --input-path ./external-repo-access.yaml
 ## Deployment 
 The following section provides instructions for deploying the paramterized [external-repo-access.yaml](../cfn/external-repo-access.yaml) CloudFormation template into your AWS account. You can also deploy the solution using the [create-stack.sh](../shell/create-stack.sh) shell script. 
 
-❗ Both deployment options require that you specify valid CloudFormation paramaters for your prerequisite AWS resources (e.g., VPC, subntes, S3 bucket) and GitHub environment settings (e.g., Branch, GitURL) to be used for stack deployment. Set the corresponding CloudFormation parameters to names, values, and resource IDs of your existing resources.
+❗ Both deployment options require that you specify valid CloudFormation paramaters for your prerequisite AWS resources (e.g., VPC, subntes, S3 bucket) and GitHub environment settings (e.g., GitHubBranch, GitHubOwner, GitHubToken) to be used for stack deployment. Set the corresponding CloudFormation parameters to the names, values, and resource IDs of your existing resources.
 
 The stack (`external-repo-access.yaml`) provisions the following primary resources:
 1. CodePipeline Pipeline to orchestrate solution workflow.
-2. CodePipeline Artifact Bucket for storing stages' compressed input and output artifacts.
-3. CodePipeline Custom Action Type to invoke CodePipeline and Git webhook on user commits to Git repo. Custom Source Action triggers CloudWatch Events rule to trigger Lambda execution of CodeBuild Project.
-4. Lambda function and execution role to trigger CodeBuild Project.
-5. KMS key to store SSH keys.
-6. CodeBuild Project and service role to retrieve SSH key from Secrets Manager to clone, compress, then upload external repo branch to CodePipeline Artifact Bucket.
+2. CodePipeline Artifact Bucket and KMS Key to securely store stages' compressed input and output artifacts.
+3. CodePipeline Webhook to invoke CodePipeline execution based on user commits to specified GitHub repo and branch.
+4. CodePipeline Source Stage _GitHub_Private_Repository_Pull_ to retrieve filtered source changes.
+5. CodePipeline Build Stage _Clone_External_Repo_ to clone external package repository.
+6. CodePipeline Build Stage _Security_Scans_ to execute third-party agent-based static application security testing, software composition analysis, dynamic code analysis, and image vulnerability scans.
+7. CodePipeline Build Stage _GitHub_Private_Repository_Push_ to push InfoSec validated external package repository to internal private GitHub repository (assuming acceptable severity findings).
 
 CloudFormation prepopulates stack parameters with the default values provided in the template. To provide alternative input values, you can specify parameters via `ParameterKey=<ParameterKey>,ParameterValue=<Value>` pairs in the `aws cloudformation create-stack` call. The following series of commands clones the _sagemaker-external-repo-access_ repository to your local machine so you can then create the stack using AWS CLI commands:
 
 ```sh
 # If not already cloned, clone remote repository and change working directory to CloudFormation folder
-git clone https://github.com/kyleblocksom/sagemaker-external-repo-access.git
+git clone https://github.com/aws-samples/sagemaker-external-repo-access.git
 cd sagemaker-external-repo-access/cfn/
 
 # Use defaults or provide your own parameter values
 STACK_NAME="external-repo-access"
 CODEPIPELINE_NAME="external-repo-pipeline"
-SOURCE_PROVIDER='CustomGitSource'
-SOURCE_VERSION='1'
 
-# Below parameter values acquired from 'Gather Third-Party Repository Configuration Settings' pre-deployment section
-GIT_BRANCH=<remote repo branch name>
-GIT_URL=<remote repo Git URL>
-GIT_WEBHOOK_IP=<webhook IP used by remote repo> #https://api.github.com/meta
+# Below parameter values acquired from 'Gather Private GitHub Repository Configuration Settings' pre-deployment section
+GITHUB_BRANCH=<private repository branch>
+GITHUB_OWNER=<private repository owner>
+GITHUB_REPO=<private repository name>
+GITHUB_TOKEN=<AWS Secrets Manager name for private repository PAT>
 
 # Below parameter values acquired from 'Establish VPC Networking Configuration' pre-deployment section
 VPC_ID=<vpc with NGW and IGW>
 SUBNET_ID1=<private subnet 1 from above VPC>
 SUBNET_ID2=<private subnet 2 from above VPC>
 
-# Below parameter values acquired from 'Create SSH Key Pair' pre-deployment section
-SECRETS_MANAGER_PAT_ARN=<ARN of PAT Secret>
-
-# Below parameter values acquired from 'Create S3 and Upload Lambda Function' pre-deployment section
-LAMBDA_S3_BUCKET=<S3 bucket with compressed Lambda code>
-LAMBDA_S3_KEY=<S3 key of compressed Lambda code>
-
 aws cloudformation create-stack \
 --stack-name ${STACK_NAME} \
 --template-body file://$(pwd)/cfn/external-repo-access.yaml \
 --parameters ParameterKey=SourceActionVersion,ParameterValue=${SOURCE_VERSION} \
-ParameterKey=SourceActionProvider,ParameterValue=${CustomSourceForGit} \
-ParameterKey=GitBranch,ParameterValue=${GIT_BRANCH} \
-ParameterKey=GitUrl,ParameterValue=${GIT_URL} \
-ParameterKey=GitWebHookIpAddress,ParameterValue=${GIT_WEBHOOK_IP} \
-ParameterKey=SecretsManagerArnForPAT,ParameterValue=${SECRETS_MANAGER_PAT_ARN} \
+ParameterKey=CodePipelineName,ParameterValue=${CODEPIPELINE_NAME} \
+ParameterKey=GitHubBranch,ParameterValue=${GITHUB_BRANCH} \
+ParameterKey=GitHubOwner,ParameterValue=${GITHUB_OWNER} \
+ParameterKey=GitHubRepo,ParameterValue=${GITHUB_REPO} \
+ParameterKey=GitHubToken,ParameterValue=${GITHUB_TOKEN} \
 ParameterKey=RepoCloneLambdaSubnet,ParameterValue=${SUBNET_ID1}\\,${SUBNET_ID2} \
 ParameterKey=RepoCloneLambdaVpc,ParameterValue=${VPC_ID} \
-ParameterKey=LambdaCodeS3Bucket,ParameterValue=${LAMBDA_S3_BUCKET} \
-ParameterKey=LambdaCodeS3Key,ParameterValue=${LAMBDA_S3_KEY} \
-ParameterKey=CodePipelineName,ParameterValue=${CODEPIPELINE_NAME} \
 --capabilities CAPABILITY_IAM
 ```
 
@@ -120,14 +110,7 @@ aws cloudformation describe-stacks \
     --query "Stacks[0].StackStatus"
 ```
 
-After a successful stack deployment, the status changes from `CREATE_IN_PROGRESS` to `CREATE_COMPLETE`. Print the stack output and retrieve the _CodePipelineWebHookUrl_ output using the below command:
-
-```sh
-aws cloudformation describe-stacks \
-    --stack-name $STACK_NAME  \
-    --output table \
-    --query "Stacks[0].Outputs[*].[OutputKey, OutputValue]"
-```
+After a successful stack deployment, the status changes from `CREATE_IN_PROGRESS` to `CREATE_COMPLETE`.
 
 ## Post-Deployment
 ❗ Please note - We are using an IP-based webhook to connect from the private Git repository to CodePipeline. In a Production environment, we recommend the use of a webhook secret to ensure that POST requests sent to the payload URL originate from your private repo. When you set a secret, you will receive the X-Hub-Signature and X-Hub-Signature-256 headers in the webhook POST request.
