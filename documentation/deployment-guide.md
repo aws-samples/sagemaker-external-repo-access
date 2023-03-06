@@ -113,7 +113,7 @@ aws cloudformation describe-stacks \
 After a successful stack deployment, the status changes from `CREATE_IN_PROGRESS` to `CREATE_COMPLETE`.
 
 ## Post-Deployment
-❗ Please note - We are using an IP-based webhook to connect from the private Git repository to CodePipeline. In a Production environment, we recommend the use of a webhook secret to ensure that POST requests sent to the payload URL originate from your private repo. When you set a secret, you will receive the X-Hub-Signature and X-Hub-Signature-256 headers in the webhook POST request.
+We are using a token-based webhook to connect from the private GitHub repository to CodePipeline. The webhook token ensures that POST requests sent to the payload URL originate from your private repo. When you set a token, you will receive the X-Hub-Signature and X-Hub-Signature-256 headers in the webhook POST request.
 
 ## Testing and Validation
 see [Testing and Validation](../documentation/testing-and-validation.md)
