@@ -1,16 +1,8 @@
 # Testing and Validation
 ---
-## Configure Webhook
-Once you complete the [Deployment Guide](documentation/deployment-guide.md) for securely accessing external package repositories, configure the webhook between your Git repository and CodePipeline using the _CodePipelineWebHookUrl_ output you retrieved from the final deployment step:
+## Push Updated External Package Repository Request File to Private Repository
 
-1. Navigate to your Git repository.
-2. Select **Settings**.
-3. Select **Webhooks** then **Add webhook**.
-4. Enter your _CodePipelineWebHookUrl_ output in the **Payload URL** field, select _application/json_ under **Content type**, then select **Add webhook**.
-
-<p align="center">
-  <img width="700" height="750" src="../img/webhook-config.png">
-</p>
+## CodePipeline Clones External Repository and Performs Security Scans
 
 ## Deploy and Launch SageMaker Studio
 This section provides an overview of how to use SageMaker Studio's system terminal to pull, edit, and push file copies between local and remote repositories. You can alternatively execute your git commands from your local system terminal or other notebook environment.
@@ -23,7 +15,7 @@ Once Studio is deployed, navigate to the [SageMaker console](https://console.aws
   <img src="../img/studio-console.png">
 </p>
 
-## Clone External Package Repository
+## Use InfoSec Approved Private Package Repository with SageMaker Studio Notebook
 Once your webhook is configured, data scientist operating in SageMaker Studio can pull the current version of the public repository request CSV file from the private GitHub repository, append desired additional public repositories to the request record, then push the updated request file back to the private repository.
 
 In the SageMaker Studio IDE, open your system terminal:
