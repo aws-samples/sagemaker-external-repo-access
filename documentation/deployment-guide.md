@@ -1,7 +1,7 @@
 # Deployment Guide
 ---
 ## Deployment Workflow
-The below workflow diagram visualizes the end-to-end deployment process that is detailed within this guide. The resultant architecture includes an AWS CodePipeline worfklow orchestration that triggers based on a SSH-secured webhook with your internal Git repository. The worfklow consists of an AWS CodeBuild project to clone remote package repositories so that an additional CodeBuild project can be used to complete static application security testing, software composition analysis, dynamic code analysis, and image vulnerability scanning.
+The below workflow diagram visualizes the end-to-end deployment process that is detailed within this guide. The resultant architecture includes an AWS CodePipeline worfklow orchestration that triggers based on a token-authenticated webhook with your internal prviate GitHub repository. The worfklow consists of an AWS CodeBuild project to clone remote package repositories so that an additional CodeBuild project can be used to complete static application security testing, software composition analysis, dynamic code analysis, and image vulnerability scanning.
 
 <p align="center">
   <img src="../img/deployment-workflow.svg">
@@ -14,52 +14,30 @@ To deploy this solution, your IAM user/role or service role must have permission
 
 You must also have [AWS CLI](https://aws.amazon.com/cli/) installed. For instructions on installing AWS CLI, please see [Installing, updating, and uninstalling the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html). If you would like to use the multi-account model deployment option, you need access to minimum two AWS accounts, recommended three accounts for development, staging and production environments.
 
-### Gather Third-Party Repository Configuration Settings
-The CloudFormation template requires a total of eleven user-defined parameters, 2 of which are specific to the third-party repository that you wish to clone.
-
-Navigate to the third-party repository and note the branch name and SSH URL:
-
-<p align="center">
-  <img src="../img/git-branch-ssh-url.svg">
-</p>
-
 ### Establish VPC Networking Configuration
 This solution requires private VPC subnets into which you can deploy your Lambda Function and CodeBuild Project. These private subnets must be deployed into a VPC that is also configured with a NAT Gateway (NGW) in a public subnet to facilitate intenret ingress and egress through an Internet Gateway.
 
 If your environment does not have the required VPC, subnets, NAT Gateway, and Internet Gateway configuration, you can create those by launching the following [CloudFormation template](https://github.com/awsdocs/aws-lambda-developer-guide/blob/master/templates/vpc-privatepublic.yaml).
 
 ### Create Personal Access Token (PAT)
-To authenticate with the third-party Git repository, you will use a PAT. If you are using GitHub, you should use a [GitHub App](https://docs.github.com/en/apps/creating-github-apps/creating-github-apps/about-apps) to access resources on behalf of an organization or for long-lived integrations. To create your PAT, please follow the GitHub instructions for [creating a personal access token (classic)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token#creating-a-personal-access-token-classic). Make note of your PAT before closing your browser as you will use it for AWS Secrets Manager configuration below.
+To authenticate with your private repository, you will use a PAT. With GitHub, you may prefer to use a [GitHub App](https://docs.github.com/en/apps/creating-github-apps/creating-github-apps/about-apps) to access resources on behalf of an organization or for long-lived integrations. To create your PAT, please follow the GitHub instructions for [creating a personal access token (classic)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token#creating-a-personal-access-token-classic). Make note of your PAT before closing your browser as you will use it for AWS Secrets Manager configuration below.
 
 Publish your PAT to AWS Secrets Manager using the AWS Command Line Interface (AWS CLI):
 
 ```sh
 SECRETS_MANAGER_PAT_ARN=$(aws secretsmanager create-secret --name github-pat \
---secret-string <your GitHuB PAT> --query ARN --output text)
-
-SECRETS_MANAGER_USERNAME_ARN=$(aws secretsmanager create-secret --name github-username \
---secret-string <your GitHub username> --query ARN --output text)
+--secret-string <your GitHub PAT> --query ARN --output text)
 ```
 Make a note of the Secret ARN, which you will input later as the _SecretsManagerArnForPAT_ CloudFormation parameter.
 
-### Create S3 and Upload Lambda Function
-This solution leverages a Lambda function that polls for the job details of the CodePipeline custom source action. Once there is a change on the source branch, the Lambda function triggers AWS CodeBuild execution and passes all the job-related information.
-Once CodeBuild complete its execution, the Lambda function then sends a success message to the CodePipeline source stage so it can proceed to the next stage.
+### Gather Private GitHub Repository Configuration Settings
+The CloudFormation template requires a total of eleven user-defined parameters, three of which are specific to your internal private GitHub repository.
 
-The Lambda function code needs to be uploaded to an S3 bucket in the same region where the CloudFormation stack is being deployed. To create a new S3 bucket, use the following AWS CLI commands:
+Navigate to your private GitHub repository and note the owner, repository, and branch names:
 
-```sh
-ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-S3_BUCKET_NAME=repo-clone-lambda-${ACCOUNT_ID} 
-aws s3 mb s3://${S3_BUCKET_NAME} --region us-east-1
-```
-Clone the _sagemaker-external-repo-access Repository_ and navigate to the Lambda folder for the compressesed [Lambda code file](../lambda/repo-clone-lambda.zip), then upload the file to the S3 bucket you just created using the following commands:
-
-```sh
-git clone https://github.com/kyleblocksom/sagemaker-external-repo-access.git
-cd sagemaker-external-repo-access/lambda/
-aws s3 cp repo-clone-lambda.zip s3://${S3_BUCKET_NAME}/repo-clone-lambda.zip
-```
+<p align="center">
+  <img src="../img/github-repo-config.svg">
+</p>
 
 #### Optional - Run Security Scan on the CloudFormation Templates
 If you would like to run a security scan on the CloudFormation templates using [`cfn_nag`](https://github.com/stelligent/cfn_nag) (recommended), you have to install `cfn_nag`:
@@ -152,8 +130,6 @@ aws cloudformation describe-stacks \
 ```
 
 ## Post-Deployment
-After you successfully deploy the above CloudFormation stack for securely accessing external package repositories, you are ready to configure your webhook, integrate with your security scanning software, and experiment with SageMaker Studio Notebooks. Please proceed to [Testing & Validation](documentation/testing-and-validation.md).
-
 ❗ Please note - We are using an IP-based webhook to connect from the private Git repository to CodePipeline. In a Production environment, we recommend the use of a webhook secret to ensure that POST requests sent to the payload URL originate from your private repo. When you set a secret, you will receive the X-Hub-Signature and X-Hub-Signature-256 headers in the webhook POST request.
 
 ## Testing and Validation
