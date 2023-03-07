@@ -48,12 +48,6 @@ CodePipeline is configured with custom source action that triggers based on the 
   <img width="400" height="650" src="../img/pipeline-execution.png">
 </p>
 
-## Use InfoSec Approved Private Package Repository with SageMaker Studio Notebook
-
-
-
-
-## Perform Security Scans
 ❗ The security scanning software is not included in the Deployment Guide's CloudFormation deployment and testing validation because of required software licensing. Up to this point, the solution performs the initial external repository ingest, against which you can perform subsequent security scans.
 
 In this case, the solution is expanded upon using a CodePipeline security test stage that receives the output artifact from our CodeBuild build stage. The security stage includes two actions for both the static analysis (Java API wrapper) and software composition analysis (agent-based) build projects. The scan results and severity findings for both actions are shown in the third-party platform's UI below:
@@ -70,4 +64,10 @@ If the security scans return lower than medium severities, CodeBuild creates a n
   <img src="../design/codepipeline-overview.svg">
 </p>
 
-Assuming the data scientist's external package repository has been approved by InfoSec, they can use their SageMaker Studio Notebook to install the validated external packages using the newly-created private repository endpoint (e.g., https://github.com/customer-org/new-repo.git).
+## Use InfoSec Approved Private Package Repository with SageMaker Studio Notebook
+
+Assuming the data scientist's external package repository has been approved by InfoSec, they can use their SageMaker Studio Notebook to install the validated external packages using the newly-created private repository endpoint (e.g., https://github.com/customer-org/new-repo.git). In this case, the cloned _private_ repository owned by _kyleblocksom_ represents the internal private GitHub copy of a public package repository that has returned less than medium severity findings and is therefore InfoSec approved:
+
+<p align="center">
+  <img src="../img/sagemaker-studio-clone.png">
+</p>
