@@ -2,21 +2,7 @@
 ---
 ## Push Updated External Package Repository Request File to Private Repository
 
-## CodePipeline Clones External Repository and Performs Security Scans
-
-## Deploy and Launch SageMaker Studio
-This section provides an overview of how to use SageMaker Studio's system terminal to pull, edit, and push file copies between local and remote repositories. You can alternatively execute your git commands from your local system terminal or other notebook environment.
-
-You can deploy Amazon SageMaker Studio into a controlled environment with multi-layer security and MLOps pipelines by following the instructions in the [Amazon SageMaker Secure MLOps Guide](https://github.com/aws-samples/amazon-sagemaker-secure-mlops).
-
-Once Studio is deployed, navigate to the [SageMaker console](https://console.aws.amazon.com/sagemaker/home?#/dashboard), select **Studio** from the menu on the left, select your **user profile** from the dropdown, then select **Open Studio**. This will launch your Jupyter Lab environment.
-
-<p align="center">
-  <img src="../img/studio-console.png">
-</p>
-
-## Use InfoSec Approved Private Package Repository with SageMaker Studio Notebook
-Once your webhook is configured, data scientist operating in SageMaker Studio can pull the current version of the public repository request CSV file from the private GitHub repository, append desired additional public repositories to the request record, then push the updated request file back to the private repository.
+With your GitHub webhook in place, data scientist operating in SageMaker Studio can pull the current version of the public repository request CSV file from the private GitHub repository, append desired additional public repositories to the request record, then push the updated request file back to the private repository.
 
 In the SageMaker Studio IDE, open your system terminal:
 
@@ -39,13 +25,33 @@ git add <public-repo-request-file.csv>
 git commit -m "modified <public-repo-request-file.csv>"
 git push -u
 ```
+
 ❗ You will need to use a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) when prompted for your password following the _git push -u_ command.
+
+## CodePipeline Clones External Repository and Performs Security Scans
 
 CodePipeline is configured with custom source action that triggers based on the data scientist's commit to the webhook-enabled Git source repo. CodePipeline execution then orchestrates the CodeBuild project to clone the remote package repository so that an additional CodeBuild project can be used to perform security scans on the cloned repository artifact. You can view CodePipeline's execution status from the [CodePipeline console](https://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-view-console.html#pipelines-executions-status-console):
 
 <p align="center">
   <img width="400" height="650" src="../img/pipeline-execution.png">
 </p>
+
+## Deploy and Launch SageMaker Studio
+
+This section provides an overview of how to use SageMaker Studio's system terminal to pull, edit, and push file copies between local and remote repositories. You can alternatively execute your git commands from your local system terminal or other notebook environment.
+
+You can deploy Amazon SageMaker Studio into a controlled environment with multi-layer security and MLOps pipelines by following the instructions in the [Amazon SageMaker Secure MLOps Guide](https://github.com/aws-samples/amazon-sagemaker-secure-mlops).
+
+Once Studio is deployed, navigate to the [SageMaker console](https://console.aws.amazon.com/sagemaker/home?#/dashboard), select **Studio** from the menu on the left, select your **user profile** from the dropdown, then select **Open Studio**. This will launch your Jupyter Lab environment.
+
+<p align="center">
+  <img src="../img/studio-console.png">
+</p>
+
+## Use InfoSec Approved Private Package Repository with SageMaker Studio Notebook
+
+
+
 
 ## Perform Security Scans
 ❗ The security scanning software is not included in the Deployment Guide's CloudFormation deployment and testing validation because of required software licensing. Up to this point, the solution performs the initial external repository ingest, against which you can perform subsequent security scans.
