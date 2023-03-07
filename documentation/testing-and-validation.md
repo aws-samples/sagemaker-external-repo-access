@@ -71,3 +71,13 @@ Assuming the data scientist's external package repository has been approved by I
 <p align="center">
   <img src="../img/sagemaker-studio-clone.svg">
 </p>
+
+---
+
+## Clean Up
+see [Clean Up](documentation/clean-up.md)
+
+---
+
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: MIT-0
