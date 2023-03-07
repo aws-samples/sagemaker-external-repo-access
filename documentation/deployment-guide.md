@@ -48,6 +48,7 @@ brew gem install cfn-nag
 
 To initiate the security scan, run the following command:
 ```sh
+git clone https://github.com/aws-samples/sagemaker-external-repo-access.git
 cd ../cfn/
 cfn_nag_scan --input-path ./external-repo-access.yaml
 ```
