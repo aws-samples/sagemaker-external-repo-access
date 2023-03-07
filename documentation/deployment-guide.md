@@ -15,7 +15,7 @@ To deploy this solution, your IAM user/role or service role must have permission
 You must also have [AWS CLI](https://aws.amazon.com/cli/) installed. For instructions on installing AWS CLI, please see [Installing, updating, and uninstalling the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html). If you would like to use the multi-account model deployment option described later, you need access to two AWS accounts minimum, recommended three accounts for development, staging, and production environments.
 
 ### Establish VPC Networking Configuration
-This solution requires private VPC subnets into which you can deploy your Lambda Function and CodeBuild Project. These private subnets must be deployed into a VPC that is also configured with a NAT Gateway (NGW) in a public subnet to facilitate intenret ingress and egress through an Internet Gateway.
+This solution requires private VPC subnets into which you can deploy CodePipeline and CodeBuild. These private subnets must be deployed into a VPC that is also configured with a NAT Gateway (NGW) in a public subnet to facilitate internet ingress and egress through an Internet Gateway (IGW).
 
 If your environment does not have the required VPC, subnets, NAT Gateway, and Internet Gateway configuration, you can create those by launching the following [CloudFormation template](https://github.com/awsdocs/aws-lambda-developer-guide/blob/master/templates/vpc-privatepublic.yaml).
 
