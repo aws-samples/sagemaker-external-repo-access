@@ -28,7 +28,7 @@ Publish your PAT to AWS Secrets Manager using the AWS Command Line Interface (AW
 SECRETS_MANAGER_PAT_ARN=$(aws secretsmanager create-secret --name github-pat \
 --secret-string <your GitHub PAT> --query ARN --output text)
 ```
-Make a note of the Secret ARN, which you will input later as the _SecretsManagerArnForPAT_ CloudFormation parameter.
+Make a note of the Secret name ('github-pat' by default), which you will input later as the _GitHubToken_ CloudFormation parameter.
 
 ### Gather Private GitHub Repository Configuration Settings
 The CloudFormation template requires a total of eleven user-defined parameters, three of which are specific to your internal private GitHub repository.
