@@ -60,7 +60,7 @@ The following section provides instructions for deploying the paramterized [exte
 
 The stack (`external-repo-access.yaml`) provisions the following primary resources:
 1. CodePipeline Pipeline to orchestrate solution workflow.
-2. CodePipeline Artifact Bucket and KMS Key to securely store stages' compressed input and output artifacts.
+2. CodePipeline Artifact Bucket and KMS Key to securely store compressed stage input and output artifacts.
 3. CodePipeline Webhook to invoke CodePipeline execution based on user commits to specified GitHub repo and branch.
 4. CodePipeline Source Stage _GitHub_Private_Repository_Pull_ to retrieve filtered source changes.
 5. CodePipeline Build Stage _Clone_External_Repo_ to clone external package repository.
