@@ -5,7 +5,7 @@ You must clean up provisioned resources to avoid charges in your AWS account.
 
 ## Step 1: Revoke GitHub Personal Access Token
 
-GitHub PATs are configured with an expiration value. If you want to ensure that your PAT cannot be used for programmatic access to your internal private GitHub repository before it reaches its expiry, you can revoke the PAT by following (GitHub's instructions)[https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/reviewing-and-revoking-personal-access-tokens-in-your-organization].
+GitHub PATs are configured with an expiration value. If you want to ensure that your PAT cannot be used for programmatic access to your internal private GitHub repository before it reaches its expiry, you can revoke the PAT by following [GitHub's instructions](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/reviewing-and-revoking-personal-access-tokens-in-your-organization).
 
 ## Step 2: Clean Up SageMaker Studio MLOps Projects
 
