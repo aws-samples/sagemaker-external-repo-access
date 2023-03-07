@@ -69,5 +69,5 @@ If the security scans return lower than medium severities, CodeBuild creates a n
 Assuming the data scientist's external package repository has been approved by InfoSec, they can use their SageMaker Studio Notebook to install the validated external packages using the newly-created private repository endpoint (e.g., https://github.com/customer-org/new-repo.git). In this case, the cloned _private_ repository owned by _kyleblocksom_ represents the internal private GitHub copy of a public package repository that has returned less than medium severity findings and is therefore InfoSec approved:
 
 <p align="center">
-  <img src="../img/sagemaker-studio-clone.png">
+  <img src="../img/sagemaker-studio-clone.svg">
 </p>
