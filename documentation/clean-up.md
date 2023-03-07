@@ -5,12 +5,11 @@ You must clean up provisioned resources to avoid charges in your AWS account.
 
 ## Step 1: Revoke GitHub Personal Access Token
 
-GitHub PATs are configured with an expiration value. If you want to ensure that your PAT cannot be used for programmatic access to your internal private GitHub repository before it reaches its expiry, you can revoke the PAT by following [GitHub's instructions]
-(https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/reviewing-and-revoking-personal-access-tokens-in-your-organization).
+GitHub PATs are configured with an expiration value. If you want to ensure that your PAT cannot be used for programmatic access to your internal private GitHub repository before it reaches its expiry, you can revoke the PAT by following (GitHub's instructions)[https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/reviewing-and-revoking-personal-access-tokens-in-your-organization].
 
 ## Step 2: Clean Up SageMaker Studio MLOps Projects
 
-SageMaker Studio projects and corresponding S3 buckets with project and pipeline artifacts will incur a cost in your AWS account. To delete your SageMaker Studio Domain and corresponding applications, notebooks, and data, please following the instructions in the [SageMaker Developer Guide] (https://docs.aws.amazon.com/sagemaker/latest/dg/gs-studio-delete-domain.html) 
+SageMaker Studio projects and corresponding S3 buckets with project and pipeline artifacts will incur a cost in your AWS account. To delete your SageMaker Studio Domain and corresponding applications, notebooks, and data, please following the instructions in the (SageMaker Developer Guide) [https://docs.aws.amazon.com/sagemaker/latest/dg/gs-studio-delete-domain.html].
 
 ## Step 2: Empty data and model S3 buckets
 CloudFormation `delete-stack` doesn't remove any non-empty S3 bucket. You must empty data science environment S3 buckets for data and models before you can delete the data science environment stack.
