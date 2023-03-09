@@ -116,6 +116,8 @@ After a successful stack deployment, the status changes from `CREATE_IN_PROGRESS
 ## Post-Deployment
 We are using a token-based webhook to connect from the private GitHub repository to CodePipeline. The webhook token ensures that POST requests sent to the payload URL originate from your private repo. When you set a token, you will receive the X-Hub-Signature and X-Hub-Signature-256 headers in the webhook POST request.
 
+With your webhook in place, you are now ready to deploy and launch your SageMaker Studio environment. From your SageMaker Studio environment, you will pull the current version of the public repository request CSV file from your private GitHub repository, append the desired additional public repositories to the request record, then push the updated request file back to the private repository. CodePipeline execution will follow and your external package repository will scanned for InfoSec approval. Please continue to _Testing and Validation_ for step-by-step guidance.
+
 ## Testing and Validation
 see [Testing and Validation](../documentation/testing-and-validation.md)
 
