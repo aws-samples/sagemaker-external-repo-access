@@ -12,7 +12,7 @@ GitHub PATs are configured with an expiration value. If you want to ensure that 
 SageMaker Studio projects and corresponding S3 buckets with project and pipeline artifacts will incur a cost in your AWS account. To delete your SageMaker Studio Domain and corresponding applications, notebooks, and data, please following the instructions in the [SageMaker Developer Guide](https://docs.aws.amazon.com/sagemaker/latest/dg/gs-studio-delete-domain.html).
 
 ## Step 3: Delete `external-repo-access.yaml` CloudFormation Stack
-The following commands use the default stack names. If you customized the stack names, adjust the commands according to your stack names.
+The following commands use the default stack name. If you customized the stack name, adjust the commands accordingly.
 
 ```sh
 aws cloudformation delete-stack --stack-name external-repo-access
